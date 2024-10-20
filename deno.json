@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "@felix/bcrypt": "jsr:@felix/bcrypt@^1.0.5",
+    "@oak/oak": "jsr:@oak/oak@^17.1.0",
+    "@twig": "npm:twig"
+  }
+}

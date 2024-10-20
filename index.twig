@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ owner }}'s Pager</title>
+    <script>
+        function page() {
+            let urgent = document.getElementById('urgent').checked;
+            if (urgent) {
+                while (!(urgent = prompt('THIS WILL BE LOUD. Assume other people will hear this! If you want to continue, type "I\'m worried about {{ owner }}!"') === "I'm worried about {{ owner }}!")) {
+                    if (confirm("You didn't enter the text! I'm serious! Send a normal message instead?")) break;
+                }
+            }
+            fetch('/page', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    what: document.getElementById('message').value,
+                    urgent
+                })
+            }).then(res => {
+                if (res.ok) {
+                    alert('Sent message!');
+                } else {
+                    alert('Failed to send message: server issue!');
+                }
+            });
+        }
+    </script>
+    <style>
+        html {
+            font-family: sans-serif;
+            position: fixed;
+            top: 0; bottom: 0; left: 0; right: 0;
+            background-color: #000;
+            display: grid;
+            align-items: center;
+            justify-content: center;
+        }
+        body {
+            background-color: #111;
+            color: #eee;
+            padding: 1em;
+            border-radius: 1em;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        body > * {
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 1ex;
+        }
+        input, button {
+            font-size: 2ex;
+        }
+    </style>
+</head>
+<body>
+<h2>{{ owner }}'s Pager</h2>
+<div>
+    <input type="checkbox" id="urgent"/>
+    <label for="urgent">This is urgent!</label>
+</div>
+<div class="message">
+    <em>{{ owner }} will know this message is from {{ user }}.</em>
+    <input type="text" id="message" placeholder="Message"/>
+    <button onclick="page()">Page Me</button>
+</div>
+</body>
+</html>
