@@ -10,9 +10,9 @@ const WEBHOOK_URL = (() => {
 const OWNER = (() => {
     const owner = Deno.env.get("OWNER");
     if (!owner) {
-        console.warn("Owner name is not set! This controls the page branding. The default value 'someone' will be used.");
+        console.warn("Owner name is not set! This controls the page branding. The default value 'Someone' will be used.");
         console.warn("To change this, set the OWNER environment variable!");
-        return "someone";
+        return "Someone";
     }
     return owner;
 })();
@@ -35,6 +35,7 @@ async function webhook(who: string, what: string, urgent: boolean) {
             body: JSON.stringify({ who, what, urgent })
         });
         if (res.ok) return true;
+        console.error("Webhook failed with response:", await res.text());
     } catch (e) {
         console.error(e);
     }
@@ -45,14 +46,15 @@ const router = new Router();
 
 router
     .get("/", async (ctx) => {
-       ctx.response.body = await new Promise<string>((resolve, reject) => {
+        console.log(ctx.state.user, "opened the pager");
+        ctx.response.body = await new Promise<string>((resolve, reject) => {
            Twig.renderFile("./index.twig",
                {
                    user: ctx.state.user,
                    owner: OWNER
                },
                (e: Error, h: string) => e ? reject(e) : resolve(h));
-       });
+        });
     })
     .post("/page", async (ctx) => {
         const json = await ctx.request.body.json();
@@ -74,7 +76,7 @@ const app = new Application();
 app.use(async (ctx, next) => {
     const auth = ctx.request.headers.get('Authorization');
     if (!auth || !auth.startsWith('Basic ')) {
-        ctx.response.headers.set('WWW-Authenticate', 'Basic realm="Burnout\'s Pager"');
+        ctx.response.headers.set('WWW-Authenticate', `Basic realm="${OWNER}'s Pager"`);
         ctx.response.status = 401;
         ctx.response.body = Deno.readFileSync("./401.html");
     } else {
