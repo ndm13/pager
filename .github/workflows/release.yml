@@ -28,7 +28,7 @@ jobs:
 
       - name: Compile Linux
         run: |
-          deno compile --allow-env --allow-read --allow-ffi --unstable-ffi --allow-net --target x86_64-unknown-linux-gnu --output build/pager main.ts
+          deno compile --allow-env --allow-read --allow-write --allow-ffi --unstable-ffi --allow-net --target x86_64-unknown-linux-gnu --output build/pager main.ts
           mkdir release
           tar -czvf release/pager-x86_64-unknown-linux-gnu.tar.gz ./build
 
